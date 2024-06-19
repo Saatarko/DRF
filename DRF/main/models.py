@@ -27,8 +27,8 @@ class Currency(models.Model):
         verbose_name_plural = 'Валюты'
 
 class Exchange(models.Model):
-    currency_exchange = models.IntegerField('курс валюты')
-    data = models.DateField('дата курса')
+    currency_exchange = models.DecimalField('курс валюты', max_digits=10, decimal_places=2)
+    date = models.DateField('дата курса')
 
     bank = models.ForeignKey(Bank, on_delete=models.CASCADE)
     currency = models.ForeignKey(Currency, on_delete=models.CASCADE)

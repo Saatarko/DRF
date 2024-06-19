@@ -17,6 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from main.views import ExchangeAPIView
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/v1/exchangelist/', ExchangeAPIView.as_view()),
+    # тут api/v1/exchangelist/   api -простообнзначение api, v1 -версия, exchangelist -slug
+    path('api/v1/exchangelist/<int:pk>/', ExchangeAPIView.as_view())
 ]

@@ -17,5 +17,5 @@ class CurrencyAdmin(admin.ModelAdmin):
 
 @admin.register(Exchange)
 class ExchangeAdmin(admin.ModelAdmin):
-    list_display = ('id', 'currency_exchange', 'data', 'bank', 'currency')
-    list_display_links = ('id', 'currency_exchange', 'data', 'bank', 'currency')
+    list_display = ('id', 'currency_exchange', 'date', 'bank', 'currency')
+    list_display_links = ('id', 'currency_exchange', 'date', 'bank', 'currency')
