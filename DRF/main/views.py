@@ -14,56 +14,68 @@ from .serializers import ExchangeSerializer
 #     serializer_class = ExchangeSerializer
 
 
-class ExchangeAPIView(APIView):   # тренировка с базовым классом
-    def get(self, request):      # обработка запрос от пользователя
-        q = Exchange.objects.all()
-        return Response({'exchange': ExchangeSerializer(q, many=True).data})   # передаем уже сериализатор many=True если значений несоклько
+class ExchangeAPIList(generics.ListCreateAPIView):   # вьюха для вывода списка и доавблени get post
+    queryset = Exchange.objects.all()
+    serializer_class = ExchangeSerializer
 
-    def post(self, request):      # обработка запрос от пользователя
-        serializer = ExchangeSerializer(data=request.data)   # пердвариатнльо считываем данные и проверяем их на валидность
-        serializer.is_valid(raise_exception=True)
+class ExchangeAPIUpdate(generics.UpdateAPIView): # вьюха для обновления (put, patch)
+    queryset = Exchange.objects.all()
+    serializer_class = ExchangeSerializer
 
+class ExchangeAPIDetailView(generics.RetrieveUpdateDestroyAPIView):  # вьюха для всего сразу (в том числе иудаления)
+    queryset = Exchange.objects.all()
+    serializer_class = ExchangeSerializer
 
-        # new = Exchange.objects.create(    # перенсли добаление в сериализатор
-        #     currency_exchange=request.data['currency_exchange'],
-        #     date=request.data['data'],
-        #     bank_id=request.data['bank_id'],   # передается именно с тем полем к которому ключ привязан
-        #     currency_id=request.data['currency_id'],
-        #
-        # )
-
-        serializer.save() # сохранияем данные в таблицу
-
-        return Response({'exchange': serializer.data})   # serializer.data сслыается на новый созданный объект
-
-    def put(self, request, *args, **kwargs):
-        pk = kwargs.get("pk", None)
-        if not pk:
-            return Response({'error': 'метод PUT не разрешен'})
-        try:
-            instance =Exchange.objects.get(pk=pk)
-        except:
-            return Response({'error': 'объект не найден'})
-
-        serializer = ExchangeSerializer(data=request.data, instance=instance)  # пердвариатнльо считываем данные и проверяем их на валидность
-        serializer.is_valid(raise_exception=True)
-
-        serializer.save()  # сохранияем данные в таблицу
-
-        return Response({'exchange': serializer.data})
-
-    def delete(self, request, *args, **kwargs):
-        pk = kwargs.get("pk", None)
-        if not pk:
-            return Response({'error': 'метод DELETE не разрешен'}, status=status.HTTP_400_BAD_REQUEST)
-        try:
-            instance = Exchange.objects.get(pk=pk).delete()
-            return Response({'message': 'Удалены данные с id ' + str(pk)}, status=status.HTTP_204_NO_CONTENT)
-        except Exchange.DoesNotExist:
-            return Response({'error': 'Объект не найден'}, status=status.HTTP_404_NOT_FOUND)
-
-
-
+# class ExchangeAPIView(APIView):   # тренировка с базовым классом
+#     def get(self, request):      # обработка запрос от пользователя
+#         q = Exchange.objects.all()
+#         return Response({'exchange': ExchangeSerializer(q, many=True).data})   # передаем уже сериализатор many=True если значений несоклько
+#
+#     def post(self, request):      # обработка запрос от пользователя
+#         serializer = ExchangeSerializer(data=request.data)   # пердвариатнльо считываем данные и проверяем их на валидность
+#         serializer.is_valid(raise_exception=True)
+#
+#
+#         # new = Exchange.objects.create(    # перенсли добаление в сериализатор
+#         #     currency_exchange=request.data['currency_exchange'],
+#         #     date=request.data['data'],
+#         #     bank_id=request.data['bank_id'],   # передается именно с тем полем к которому ключ привязан
+#         #     currency_id=request.data['currency_id'],
+#         #
+#         # )
+#
+#         serializer.save() # сохранияем данные в таблицу
+#
+#         return Response({'exchange': serializer.data})   # serializer.data сслыается на новый созданный объект
+#
+#     def put(self, request, *args, **kwargs):
+#         pk = kwargs.get("pk", None)
+#         if not pk:
+#             return Response({'error': 'метод PUT не разрешен'})
+#         try:
+#             instance =Exchange.objects.get(pk=pk)
+#         except:
+#             return Response({'error': 'объект не найден'})
+#
+#         serializer = ExchangeSerializer(data=request.data, instance=instance)  # пердвариатнльо считываем данные и проверяем их на валидность
+#         serializer.is_valid(raise_exception=True)
+#
+#         serializer.save()  # сохранияем данные в таблицу
+#
+#         return Response({'exchange': serializer.data})
+#
+#     def delete(self, request, *args, **kwargs):
+#         pk = kwargs.get("pk", None)
+#         if not pk:
+#             return Response({'error': 'метод DELETE не разрешен'}, status=status.HTTP_400_BAD_REQUEST)
+#         try:
+#             instance = Exchange.objects.get(pk=pk).delete()
+#             return Response({'message': 'Удалены данные с id ' + str(pk)}, status=status.HTTP_204_NO_CONTENT)
+#         except Exchange.DoesNotExist:
+#             return Response({'error': 'Объект не найден'}, status=status.HTTP_404_NOT_FOUND)
+#
+#
+#
 
 
 

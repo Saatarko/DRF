@@ -10,7 +10,8 @@ from .models import Exchange
 class ExchangeSerializer(serializers.ModelSerializer):  # создаем сериализатор для данных точнос связанных с таблицей
     class Meta:
         model = Exchange  # модель которую берем за основу
-        fields = ('currency_exchange', 'date', 'bank', 'currency')  # поля для сериализации  при этом 'bank', 'currency' -используются как в можели (а не пополям, как в просто сериалзаторе)
+        # fields = ('currency_exchange', 'date', 'bank', 'currency')  # поля для сериализации  при этом 'bank', 'currency' -используются как в можели (а не пополям, как в просто сериалзаторе)
+        fields = '__all__'
 
 #
 # class ExchangeModel:
