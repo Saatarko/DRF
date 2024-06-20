@@ -1,30 +1,81 @@
 from django.forms import model_to_dict
 from django.shortcuts import render
-from rest_framework import generics, status
+from rest_framework import generics, status, viewsets
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Exchange
+from .models import Exchange, Bank
 from .serializers import ExchangeSerializer
 
 
-# Create your views here.
-# class ExchangeAPIView(generics.ListAPIView):
-#     queryset = Exchange.objects.all()
-#     serializer_class = ExchangeSerializer
 
-
+# вьюхи для проверки прав доступа
 class ExchangeAPIList(generics.ListCreateAPIView):   # вьюха для вывода списка и доавблени get post
     queryset = Exchange.objects.all()
     serializer_class = ExchangeSerializer
 
-class ExchangeAPIUpdate(generics.UpdateAPIView): # вьюха для обновления (put, patch)
+class ExchangeAPIUpdate(generics.RetrieveUpdateAPIView): # вьюха для обновления (put, patch)
     queryset = Exchange.objects.all()
     serializer_class = ExchangeSerializer
 
-class ExchangeAPIDetailView(generics.RetrieveUpdateDestroyAPIView):  # вьюха для всего сразу (в том числе иудаления)
+class ExchangeAPIDetailView(generics.RetrieveDestroyAPIView):  # вьюха для удаления
     queryset = Exchange.objects.all()
     serializer_class = ExchangeSerializer
+
+
+
+# class ExchangeViewSet(viewsets.ModelViewSet):
+#     # этот ModelViewSet ползволяет делать все. есть еще без долавления и прочее
+#     # при необходимости можно залезть внутрь скопировава миксины котрые  делают этот вьюсет
+#     # и затем удалив ненужны, чтобы отредактировать его под себя
+#     queryset = Exchange.objects.all()
+#     serializer_class = ExchangeSerializer
+#
+#     # если требуется выбор какого-то опеределнного кол-ва записей то надо переопределить
+#     # метод get_queryset (в данном случае 3 первых элемента)
+#
+#     def get_queryset(self):
+#         pk = self.kwargs['pk']
+#
+#         if not pk:
+#             return Exchange.objects.all()[:3]
+#
+#         return Exchange.objects.filter(pk=pk)   # тут обязательно долже быть списк, поэтому фильтр
+
+    # данный декораток используется для создания маршрту котрого нет в
+    # базовом наборе в methods -указываем методы используемые на маршруте,
+    # detail - если Тру(то одна запитсь) иначе - список
+    # т.е сейчас появится новый маршрут http://127.0.0.1:8000/api/v1/exchange/bank
+    # bank - берется из названия функции(метода)
+    # @action(methods=['get'], detail=False)   # это для вывода только списка
+    # def bank(self, request):
+    #     bank = Bank.objects.all()
+    #     return Response({'bank': [b.name for b in bank]})
+
+    # @action(methods=['get'], detail=True)   # это для вывода не только списка банков а и инфы по ним
+    # def bank(self, request, pk=None):
+    #     bank = Bank.objects.get(pk=pk)
+    #     return Response({'bank': bank.name})
+
+
+# # три продвинутые вьюхи для работы напрямую с данаыми связанными ст аблицами (но они хоть и выполняют разные
+# # разные действия , в них есть дубблирование кода. поэтому етсь более продвинутые viewset
+#
+# class ExchangeAPIList(generics.ListCreateAPIView):   # вьюха для вывода списка и доавблени get post
+#     queryset = Exchange.objects.all()
+#     serializer_class = ExchangeSerializer
+#
+# class ExchangeAPIUpdate(generics.UpdateAPIView): # вьюха для обновления (put, patch)
+#     queryset = Exchange.objects.all()
+#     serializer_class = ExchangeSerializer
+#
+# class ExchangeAPIDetailView(generics.RetrieveUpdateDestroyAPIView):  # вьюха для всего сразу (в том числе иудаления)
+#     queryset = Exchange.objects.all()
+#     serializer_class = ExchangeSerializer
+
+
+
 
 # class ExchangeAPIView(APIView):   # тренировка с базовым классом
 #     def get(self, request):      # обработка запрос от пользователя

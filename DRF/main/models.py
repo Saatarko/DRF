@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 
 
@@ -32,6 +33,7 @@ class Exchange(models.Model):
 
     bank = models.ForeignKey(Bank, on_delete=models.CASCADE)
     currency = models.ForeignKey(Currency, on_delete=models.CASCADE)
+    user = models.ForeignKey(User,verbose_name='Пользователь', on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.currency} {self.data}"
