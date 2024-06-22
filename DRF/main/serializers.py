@@ -8,6 +8,8 @@ from .models import Exchange
 
 
 class ExchangeSerializer(serializers.ModelSerializer):  # создаем сериализатор для данных точнос связанных с таблицей
+    # нужно для того чтобы юзхер пписвивал автоматически и на странице ввода данных небыло выбора пользователя
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     class Meta:
         model = Exchange  # модель которую берем за основу
         # fields = ('currency_exchange', 'date', 'bank', 'currency')  # поля для сериализации  при этом 'bank', 'currency' -используются как в можели (а не пополям, как в просто сериалзаторе)

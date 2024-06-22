@@ -1,28 +1,45 @@
 from django.forms import model_to_dict
 from django.shortcuts import render
 from rest_framework import generics, status, viewsets
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Exchange, Bank
+from .permission import AdminOrReadOnly, IsOwnerOrRadOnly
 from .serializers import ExchangeSerializer
 
 
+# для глобального исопльзования пермишенов пользуеемся  settings. Но объявленные permission_classes - используются в первыую чоередь
+
+
+class ExchangePagination(PageNumberPagination):
+    page_size = 3
+    page_size_query_param = 'page_size'   # позовляет api делать запрос чреез url  на колво элемнетво на странице
+    max_page_size = 10000  # влияет только на page_size_query_param
+
 
 # вьюхи для проверки прав доступа
-class ExchangeAPIList(generics.ListCreateAPIView):   # вьюха для вывода списка и доавблени get post
+class ExchangeAPIList(generics.ListCreateAPIView):  # вьюха для вывода списка и доавблени get post
     queryset = Exchange.objects.all()
     serializer_class = ExchangeSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)  # настрока пермишенов (конкретно этот - не авторизованны й может читать, авторизованный  добавлять)
+    pagination_class = (ExchangePagination,)   # подлючаем свою пагинацию (болший приортетиет чем глобальное через settings)
 
-class ExchangeAPIUpdate(generics.RetrieveUpdateAPIView): # вьюха для обновления (put, patch)
+
+class ExchangeAPIUpdate(generics.RetrieveUpdateAPIView):  # вьюха для обновления (put, patch)
     queryset = Exchange.objects.all()
     serializer_class = ExchangeSerializer
+    permission_classes = (IsAuthenticated,)
+    # authentication_classes = (TokenAuthentication, )  # означает что этот мтеод доступен только по токенам
 
-class ExchangeAPIDetailView(generics.RetrieveDestroyAPIView):  # вьюха для удаления
+class ExchangeAPIDestroy(generics.RetrieveDestroyAPIView):  # вьюха для удаления
     queryset = Exchange.objects.all()
     serializer_class = ExchangeSerializer
-
+    permission_classes = (AdminOrReadOnly,)  # только дя админа (при нем юзеру вообще ничгео нельзя)
 
 
 # class ExchangeViewSet(viewsets.ModelViewSet):
@@ -43,20 +60,20 @@ class ExchangeAPIDetailView(generics.RetrieveDestroyAPIView):  # вьюха дл
 #
 #         return Exchange.objects.filter(pk=pk)   # тут обязательно долже быть списк, поэтому фильтр
 
-    # данный декораток используется для создания маршрту котрого нет в
-    # базовом наборе в methods -указываем методы используемые на маршруте,
-    # detail - если Тру(то одна запитсь) иначе - список
-    # т.е сейчас появится новый маршрут http://127.0.0.1:8000/api/v1/exchange/bank
-    # bank - берется из названия функции(метода)
-    # @action(methods=['get'], detail=False)   # это для вывода только списка
-    # def bank(self, request):
-    #     bank = Bank.objects.all()
-    #     return Response({'bank': [b.name for b in bank]})
+# данный декораток используется для создания маршрту котрого нет в
+# базовом наборе в methods -указываем методы используемые на маршруте,
+# detail - если Тру(то одна запитсь) иначе - список
+# т.е сейчас появится новый маршрут http://127.0.0.1:8000/api/v1/exchange/bank
+# bank - берется из названия функции(метода)
+# @action(methods=['get'], detail=False)   # это для вывода только списка
+# def bank(self, request):
+#     bank = Bank.objects.all()
+#     return Response({'bank': [b.name for b in bank]})
 
-    # @action(methods=['get'], detail=True)   # это для вывода не только списка банков а и инфы по ним
-    # def bank(self, request, pk=None):
-    #     bank = Bank.objects.get(pk=pk)
-    #     return Response({'bank': bank.name})
+# @action(methods=['get'], detail=True)   # это для вывода не только списка банков а и инфы по ним
+# def bank(self, request, pk=None):
+#     bank = Bank.objects.get(pk=pk)
+#     return Response({'bank': bank.name})
 
 
 # # три продвинутые вьюхи для работы напрямую с данаыми связанными ст аблицами (но они хоть и выполняют разные
@@ -73,8 +90,6 @@ class ExchangeAPIDetailView(generics.RetrieveDestroyAPIView):  # вьюха дл
 # class ExchangeAPIDetailView(generics.RetrieveUpdateDestroyAPIView):  # вьюха для всего сразу (в том числе иудаления)
 #     queryset = Exchange.objects.all()
 #     serializer_class = ExchangeSerializer
-
-
 
 
 # class ExchangeAPIView(APIView):   # тренировка с базовым классом
@@ -127,10 +142,6 @@ class ExchangeAPIDetailView(generics.RetrieveDestroyAPIView):  # вьюха дл
 #
 #
 #
-
-
-
-
 
 
 # class ExchangeAPIView(APIView):   # тренировка с базовым классом

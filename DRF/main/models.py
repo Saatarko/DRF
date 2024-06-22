@@ -23,9 +23,11 @@ class Currency(models.Model):
 
     def __str__(self):
         return self.currency_name
+
     class Meta:
         verbose_name = 'Валюты'
         verbose_name_plural = 'Валюты'
+
 
 class Exchange(models.Model):
     currency_exchange = models.DecimalField('курс валюты', max_digits=10, decimal_places=2)
@@ -33,10 +35,10 @@ class Exchange(models.Model):
 
     bank = models.ForeignKey(Bank, on_delete=models.CASCADE)
     currency = models.ForeignKey(Currency, on_delete=models.CASCADE)
-    user = models.ForeignKey(User,verbose_name='Пользователь', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, verbose_name='Пользователь', on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.currency} {self.data}"
+        return f"{self.currency_exchange} {self.date}"
 
     class Meta:
         verbose_name = 'Курсы валют'
